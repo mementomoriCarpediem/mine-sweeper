@@ -1,10 +1,78 @@
-import React from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Board from '../Board';
+
+type LevelType = 'Beginner' | 'Intermediate' | 'Expert';
+export type CustomLevelType = { row: number; column: number; bomb: number };
 
 type Props = {};
 
 const Game = (props: Props) => {
+  const [level, setLevel] = useState<LevelType | ''>('');
+  const [customLevelInputs, setCustomLevelInputs] = useState<CustomLevelType>({
+    row: 0,
+    column: 0,
+    bomb: 0,
+  });
+
+  const { row, column, bomb } = customLevelInputs;
+
+  const isEmpty = useMemo(() => row === 0 || column === 0, [column, row]);
+
+  const inputNameArray = [
+    { name: 'row', text: '가로 길이', number: row },
+    { name: 'column', text: '세로 길이', number: column },
+    { name: 'bomb', text: '지뢰 수', number: bomb },
+  ];
+
+  const onChangeLevelInput = (e: ChangeEvent<HTMLSelectElement>) => {
+    setLevel(e.target.value as LevelType);
+  };
+
+  const onChangeCustomLevelInputs = (
+    e: ChangeEvent<HTMLInputElement> & {
+      target: { name: keyof CustomLevelType; value: number };
+    }
+  ) => {
+    const { name, value } = e.target;
+
+    const dummyObject = { ...customLevelInputs };
+    dummyObject[name] = Number(value);
+
+    setCustomLevelInputs(dummyObject);
+  };
+
+  //change setting level inputs by level selection
+  useEffect(() => {
+    switch (level) {
+      case 'Beginner':
+        setCustomLevelInputs({
+          row: 8,
+          column: 8,
+          bomb: customLevelInputs.bomb,
+        });
+        break;
+      case 'Intermediate':
+        setCustomLevelInputs({
+          row: 16,
+          column: 16,
+          bomb: customLevelInputs.bomb,
+        });
+        break;
+      case 'Expert':
+        setCustomLevelInputs({
+          row: 32,
+          column: 16,
+          bomb: customLevelInputs.bomb,
+        });
+        break;
+
+      default:
+        console.log('[Game/useEffect] custom settting..');
+        break;
+    }
+  }, [customLevelInputs.bomb, level]);
+
   return (
     <GameContainer>
       <HeaderContainer>
@@ -13,29 +81,31 @@ const Game = (props: Props) => {
           <MineDisplay>10 개</MineDisplay>
         </SubBox>
         <SubBox style={{ width: '100%' }}>
-          <LevelSelection>
+          <LevelSelection onChange={(e) => onChangeLevelInput(e)}>
             <LevelOption value="">난이도 선택</LevelOption>
             <LevelOption value="Beginner">Beginner</LevelOption>
             <LevelOption value="Intermediate">Intermediate</LevelOption>
             <LevelOption value="Expert">Expert</LevelOption>
           </LevelSelection>
           <SettingContainer>
-            <SettingInputLabel>
-              가로 수
-              <SettingInput type="number" />
-            </SettingInputLabel>
-            <SettingInputLabel>
-              세로 수
-              <SettingInput type="number" />
-            </SettingInputLabel>
-            <SettingInputLabel>
-              폭탄 수
-              <SettingInput type="number" />
-            </SettingInputLabel>
+            {inputNameArray.map((item) => {
+              return (
+                <SettingInputLabel key={item.text}>
+                  {item.text}
+                  <SettingInput
+                    type="number"
+                    name={item.name}
+                    value={item.number}
+                    min="0"
+                    onChange={onChangeCustomLevelInputs}
+                  />
+                </SettingInputLabel>
+              );
+            })}
           </SettingContainer>
           <ButtonGroup>
             <StartButton>Start</StartButton>
-            <ResetButton>Reset</ResetButton>
+            <ResetButton onClick={resetGame}>Reset</ResetButton>
           </ButtonGroup>
         </SubBox>
         <SubBox>
@@ -43,7 +113,9 @@ const Game = (props: Props) => {
           <TimeDisplay> 1 초</TimeDisplay>
         </SubBox>
       </HeaderContainer>
-      <Board />
+
+      <Board cellInfoNumbers={customLevelInputs} />
+      {isEmpty && <EmptyText>게임 설정 값을 입력해주세요.</EmptyText>}
     </GameContainer>
   );
 };
@@ -78,12 +150,17 @@ const SettingContainer = styled.section`
 `;
 
 const SettingInput = styled.input`
-  width: 2rem;
+  width: 50%;
   height: 1rem;
-  margin-left: 1rem;
+  /* margin-left: 1rem; */
 `;
 
-const SettingInputLabel = styled.label``;
+const SettingInputLabel = styled.label`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
 
 const SubBox = styled.div`
   display: flex;
@@ -122,7 +199,7 @@ const ResetButton = styled.button`
 
 const StartButton = styled(ResetButton)`
   color: white;
-  width: 10rem;
+  width: 7rem;
   background-color: blue;
 `;
 
@@ -134,3 +211,5 @@ const LevelSelection = styled.select`
 `;
 
 const LevelOption = styled.option``;
+
+const EmptyText = styled.p``;
