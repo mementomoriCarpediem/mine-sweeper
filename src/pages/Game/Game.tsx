@@ -5,19 +5,20 @@ import Board from '../Board';
 type LevelType = 'Beginner' | 'Intermediate' | 'Expert';
 export type CustomLevelType = { row: number; column: number; bomb: number };
 
-type Props = {};
+const initialGameSettingValues = {
+  row: 0,
+  column: 0,
+  bomb: 0,
+};
 
-const Game = (props: Props) => {
+const Game = () => {
+  const [isGameStart, setIsGameStart] = useState<boolean>(false);
   const [level, setLevel] = useState<LevelType | ''>('');
-  const [customLevelInputs, setCustomLevelInputs] = useState<CustomLevelType>({
-    row: 0,
-    column: 0,
-    bomb: 0,
-  });
+  const [customLevelInputs, setCustomLevelInputs] = useState<CustomLevelType>(
+    initialGameSettingValues
+  );
 
   const { row, column, bomb } = customLevelInputs;
-
-  const isEmpty = useMemo(() => row === 0 || column === 0, [column, row]);
 
   const inputNameArray = [
     { name: 'row', text: '가로 길이', number: row },
@@ -73,6 +74,20 @@ const Game = (props: Props) => {
     }
   }, [customLevelInputs.bomb, level]);
 
+  const resetGame = () => {
+    setLevel('');
+    setCustomLevelInputs(initialGameSettingValues);
+  };
+
+  const gameStart = () => {
+    console.log(1, isGameStart);
+    if (row && column && bomb) {
+      setIsGameStart(true);
+    } else {
+      window.alert('게임 설정 값을 모두 입력해주세요');
+    }
+  };
+
   return (
     <GameContainer>
       <HeaderContainer>
@@ -104,7 +119,7 @@ const Game = (props: Props) => {
             })}
           </SettingContainer>
           <ButtonGroup>
-            <StartButton>Start</StartButton>
+            <StartButton onClick={gameStart}>Start</StartButton>
             <ResetButton onClick={resetGame}>Reset</ResetButton>
           </ButtonGroup>
         </SubBox>
@@ -114,8 +129,15 @@ const Game = (props: Props) => {
         </SubBox>
       </HeaderContainer>
 
-      <Board cellInfoNumbers={customLevelInputs} />
-      {isEmpty && <EmptyText>게임 설정 값을 입력해주세요.</EmptyText>}
+      {isGameStart ? (
+        <Board
+          cellInfoNumbers={customLevelInputs}
+          isGameStart={isGameStart}
+          setIsGameStart={setIsGameStart}
+        />
+      ) : (
+        <EmptyText>게임 설정 값을 입력해주세요.</EmptyText>
+      )}
     </GameContainer>
   );
 };
@@ -125,9 +147,9 @@ export default Game;
 const GameContainer = styled.main`
   display: flex;
   flex-direction: column;
-  /* justify-content: space-around; */
   align-items: center;
   width: 50%;
+  min-height: 400px;
   margin: auto;
   margin-top: 5rem;
   border: 2px solid black;
@@ -193,13 +215,13 @@ const ResetButton = styled.button`
   padding: 8px 15px;
   margin-left: 1rem;
   border-width: 0;
+  width: 5rem;
   background-color: salmon;
   border-radius: ${(props) => props.theme.borderRadius};
 `;
 
 const StartButton = styled(ResetButton)`
   color: white;
-  width: 7rem;
   background-color: blue;
 `;
 
@@ -212,4 +234,6 @@ const LevelSelection = styled.select`
 
 const LevelOption = styled.option``;
 
-const EmptyText = styled.p``;
+const EmptyText = styled.p`
+  margin: auto auto;
+`;
