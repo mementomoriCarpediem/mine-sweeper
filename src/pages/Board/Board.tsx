@@ -181,7 +181,6 @@ const Board = ({
       openCellsWithOutMines(rowIndex, columnIndex - 1);
       openCellsWithOutMines(rowIndex, columnIndex + 1);
     }
-    // console.log('check here ==>', resultArray);
 
     setBoardArray(resultArray);
   };
@@ -199,7 +198,6 @@ const Board = ({
       ) {
         // console.log('[Board/checkAdjacentCells] this location is not exist');
       } else {
-        // console.log(4, item);
         if (
           boradArray[rowIndex + item[0]][colIndex + item[1]] === CellStatus.Bomb
         ) {
@@ -223,7 +221,6 @@ const Board = ({
       return;
 
     const mineNumberDetected = checkAdjacentCells(rowIndex, colIndex);
-    console.log(4, mineNumberDetected);
 
     if (mineNumberDetected > 0) {
       const newArrayWithMineNumberSet = setMineNumberToCell(
@@ -232,10 +229,7 @@ const Board = ({
         colIndex
       );
       newArrayWithMineNumberSet && setBoardArray(newArrayWithMineNumberSet);
-
-      console.log(5);
     } else if (mineNumberDetected === 0) {
-      console.log(6);
       const resultArray = [...boradArray];
       resultArray[rowIndex][colIndex] = CellStatus.Opened;
       setBoardArray(resultArray);
@@ -245,8 +239,6 @@ const Board = ({
       openCellsWithOutMines(rowIndex, colIndex - 1);
       openCellsWithOutMines(rowIndex, colIndex + 1);
     }
-
-    // resultArray[rowIndex][colIndex] = CellStatus.Opened;
   };
 
   const setMineNumberToCell = (
@@ -256,40 +248,30 @@ const Board = ({
   ) => {
     const resultArray = [...boradArray];
 
-    console.log('check1', mineNumberDetected, rowIndex, columnIndex);
-
     switch (mineNumberDetected) {
       case 1:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb1;
-        // console.log('check2', resultArray);
         return resultArray;
       case 2:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb2;
-        // console.log('check3', resultArray);
         return resultArray;
       case 3:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb3;
-        // console.log('check4', resultArray);
         return resultArray;
       case 4:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb4;
-        // console.log('check5', resultArray);
         return resultArray;
       case 5:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb5;
-        // console.log('check6', resultArray);
         return resultArray;
       case 6:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb6;
-        // console.log('check7', resultArray);
         return resultArray;
       case 7:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb7;
-        // console.log('check8', resultArray);
         return resultArray;
       case 8:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb8;
-        // console.log('check9', resultArray);
         return resultArray;
       default:
         console.log('[Board/setMineNumberToCell] mineNumber is not set');
