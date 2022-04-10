@@ -8,7 +8,7 @@ import {
 } from '../../store/slices/gameSlices';
 import Board from '../Board/Board';
 
-const TIMEOUT = 5; //sec
+const TIMEOUT = 10; //sec
 
 const Game = () => {
   const { settings } = useAppSelector((state) => state.game);
@@ -100,16 +100,6 @@ const Game = () => {
     }
   }, [level]);
 
-  const resetGame = () => {
-    console.log('reset game');
-    if (levelInputRef.current) {
-      levelInputRef.current.value = '';
-    }
-    setCustomGameSettingInputs({ row: 0, column: 0, bomb: 0 });
-    setIsGameStart(false);
-    setIsGameOver(false);
-  };
-
   const gameStart = () => {
     if (
       customGameSettingInputs.row > 0 &&
@@ -189,7 +179,6 @@ const Game = () => {
           </SettingContainer>
           <ButtonGroup>
             <StartButton onClick={gameStart}>Start</StartButton>
-            <ResetButton onClick={resetGame}>Reset</ResetButton>
           </ButtonGroup>
         </SubBox>
         <SubBox>
@@ -218,7 +207,7 @@ const GameContainer = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50%;
+  max-width: 800px;
   min-height: 400px;
   margin: auto;
   margin-top: 5rem;
