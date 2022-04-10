@@ -1,44 +1,38 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+# 지뢰찾기
 
-## Available Scripts
+![스크린샷 2022-04-11 오전 7 38 43](https://user-images.githubusercontent.com/70994795/162643059-ec708b9f-b2c4-4096-a774-2934cb245049.png)
+![스크린샷 2022-04-11 오전 7 39 53](https://user-images.githubusercontent.com/70994795/162643063-0a6ecc11-6e44-44ef-a54b-588005af69bd.png)
 
-In the project directory, you can run:
 
-### `yarn start`
+### 설치 및 시작
+`git clone https://github.com/mementomoriCarpediem/mine-sweeper.git` &&
+`cd mine-sweeper` &&
+`yarn install`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 적용 기술s
+- React, Typescript, redux-toolkit, styled-components
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+### 작동 방법
+- 프로젝트 시작
+  - `yarn start`
 
-### `yarn test`
+- 상단 메뉴의 "난이도 선택" or 게임 세팅 값 수동 입력("가로길이, 세로길이,지뢰 수)
+  - "난이도 선택"을 통해 난이도 선택 시에는 미리 세팅된 게임 세팅 값들이 자동 입력
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 게임 시작 
+  - "Start" 버튼 클릭
+  - 게임 시작과 동시에, 설정된 사이즈에 대한 게임판이 생성되며, 우측 "소요시간" 카운트 시작 (소요시간은 30초로 defualt 설정되어 있음)
 
-### `yarn build`
+- 게임 진행
+  - 원하는 셀 클릭 시, 인근 셀에 지뢰가 탐지 될때까지는 자동 오픈
+  - 첫 번째 클릭 셀이 지뢰인 경우는, 자동으로 해당 지뢰 위치를 아래 row로 이동시켜, 첫 번째에는 항상 지뢰가 없도록 설정
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- 게임 종료
+  - 설정된 시간(30초)가 종료되거나, 2번째 클릭 이상에서 지뢰를 선택한 경우 게임 종료(실패)
+  - 남은 셀이 모두 지로인 경우, 유저 승리 alert 메시지 (성공)
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+- 게임 재시작
+  - 새로고침 클릭
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
