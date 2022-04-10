@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 
 import './index.css';
 import App from './App';
-import { store } from './app/store';
+import { store } from './store/config';
 import { Provider as ReduxProvider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 

@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { CustomLevelType } from './Game/Game';
+import { useAppSelector } from '../store/config';
 
 enum CellStatus {
   Opened = 'OPENED',
@@ -11,13 +11,14 @@ enum CellStatus {
 type BoardType = CellStatus[][];
 
 type Props = {
-  cellInfoNumbers: CustomLevelType;
   isGameStart: boolean;
   setIsGameStart: Dispatch<SetStateAction<boolean>>;
 };
 
-const Board = ({ cellInfoNumbers, isGameStart, setIsGameStart }: Props) => {
-  const { row, column, bomb } = cellInfoNumbers;
+const Board = ({ isGameStart, setIsGameStart }: Props) => {
+  const { settings } = useAppSelector((state) => state.game);
+  const { row, column, bomb } = settings;
+
   const [boradArray, setBoardArray] = useState<BoardType>();
 
   useEffect(() => {

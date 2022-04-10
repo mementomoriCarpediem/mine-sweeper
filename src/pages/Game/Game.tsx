@@ -1,70 +1,91 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useAppDispatch, useAppSelector } from '../../store/config';
+import {
+  CustomSettingsType,
+  LevelType,
+  updateGameSettings,
+} from '../../store/slices/gameSlices';
 import Board from '../Board';
 
-type LevelType = 'Beginner' | 'Intermediate' | 'Expert';
-export type CustomLevelType = { row: number; column: number; bomb: number };
-
-const initialGameSettingValues = {
-  row: 0,
-  column: 0,
-  bomb: 0,
-};
-
 const Game = () => {
+  const { settings } = useAppSelector((state) => state.game);
+  const { gameLevel, row, column, bomb } = settings;
+
+  useEffect(() => {
+    console.log('[Game/useEffect] setting values from redux store', {
+      gameLevel,
+      row,
+      column,
+      bomb,
+    });
+  }, [bomb, column, gameLevel, row]);
+
+  const levelInputRef = useRef<HTMLSelectElement>(null);
+
+  const dispatch = useAppDispatch();
+
   const [isGameStart, setIsGameStart] = useState<boolean>(false);
   const [level, setLevel] = useState<LevelType | ''>('');
-  const [customLevelInputs, setCustomLevelInputs] = useState<CustomLevelType>(
-    initialGameSettingValues
-  );
-
-  const { row, column, bomb } = customLevelInputs;
+  const [customGameSettingInputs, setCustomGameSettingInputs] =
+    useState<CustomSettingsType>({ row: 0, column: 0, bomb: 0 });
 
   const inputNameArray = [
-    { name: 'row', text: '가로 길이', number: row },
-    { name: 'column', text: '세로 길이', number: column },
-    { name: 'bomb', text: '지뢰 수', number: bomb },
+    { name: 'row', text: '가로 길이', number: customGameSettingInputs.row },
+    {
+      name: 'column',
+      text: '세로 길이',
+      number: customGameSettingInputs.column,
+    },
+    { name: 'bomb', text: '지뢰 수', number: customGameSettingInputs.bomb },
   ];
 
   const onChangeLevelInput = (e: ChangeEvent<HTMLSelectElement>) => {
     setLevel(e.target.value as LevelType);
+    return level;
   };
 
   const onChangeCustomLevelInputs = (
     e: ChangeEvent<HTMLInputElement> & {
-      target: { name: keyof CustomLevelType; value: number };
+      target: { name: keyof CustomSettingsType; value: number };
     }
   ) => {
     const { name, value } = e.target;
 
-    const dummyObject = { ...customLevelInputs };
+    const dummyObject = { ...customGameSettingInputs };
     dummyObject[name] = Number(value);
-
-    setCustomLevelInputs(dummyObject);
+    setCustomGameSettingInputs(dummyObject);
   };
 
   //change setting level inputs by level selection
   useEffect(() => {
     switch (level) {
       case 'Beginner':
-        setCustomLevelInputs({
+        setCustomGameSettingInputs({
           row: 8,
           column: 8,
-          bomb: customLevelInputs.bomb,
+          bomb: 10,
         });
         break;
       case 'Intermediate':
-        setCustomLevelInputs({
+        setCustomGameSettingInputs({
           row: 16,
           column: 16,
-          bomb: customLevelInputs.bomb,
+          bomb: 30,
         });
         break;
       case 'Expert':
-        setCustomLevelInputs({
-          row: 32,
+        setCustomGameSettingInputs({
+          row: 16,
           column: 16,
-          bomb: customLevelInputs.bomb,
+          bomb: 50,
+        });
+        break;
+      case '':
+        setCustomGameSettingInputs({
+          row: 0,
+          column: 0,
+          bomb: 0,
         });
         break;
 
@@ -72,16 +93,32 @@ const Game = () => {
         console.log('[Game/useEffect] custom settting..');
         break;
     }
-  }, [customLevelInputs.bomb, level]);
+  }, [level]);
 
   const resetGame = () => {
-    setLevel('');
-    setCustomLevelInputs(initialGameSettingValues);
+    if (levelInputRef.current) {
+      levelInputRef.current.value = '';
+    }
+    setCustomGameSettingInputs({ row: 0, column: 0, bomb: 0 });
+    setIsGameStart(false);
   };
 
   const gameStart = () => {
-    console.log(1, isGameStart);
-    if (row && column && bomb) {
+    if (
+      customGameSettingInputs.row > 0 &&
+      customGameSettingInputs.column > 0 &&
+      customGameSettingInputs.bomb > 0
+    ) {
+      dispatch(
+        updateGameSettings({
+          settings: {
+            gameLevel: level,
+            row: customGameSettingInputs.row,
+            column: customGameSettingInputs.column,
+            bomb: customGameSettingInputs.bomb,
+          },
+        })
+      );
       setIsGameStart(true);
     } else {
       window.alert('게임 설정 값을 모두 입력해주세요');
@@ -96,7 +133,10 @@ const Game = () => {
           <MineDisplay>{bomb} 개</MineDisplay>
         </SubBox>
         <SubBox style={{ width: '100%' }}>
-          <LevelSelection onChange={(e) => onChangeLevelInput(e)}>
+          <LevelSelection
+            onChange={(e) => onChangeLevelInput(e)}
+            ref={levelInputRef}
+          >
             <LevelOption value="">난이도 선택</LevelOption>
             <LevelOption value="Beginner">Beginner</LevelOption>
             <LevelOption value="Intermediate">Intermediate</LevelOption>
@@ -130,11 +170,7 @@ const Game = () => {
       </HeaderContainer>
 
       {isGameStart ? (
-        <Board
-          cellInfoNumbers={customLevelInputs}
-          isGameStart={isGameStart}
-          setIsGameStart={setIsGameStart}
-        />
+        <Board isGameStart={isGameStart} setIsGameStart={setIsGameStart} />
       ) : (
         <EmptyText>게임 설정 값을 입력해주세요.</EmptyText>
       )}
