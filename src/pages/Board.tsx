@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { CustomLevelType } from './Game/Game';
 
@@ -46,6 +40,19 @@ const Board = ({ cellInfoNumbers, isGameStart, setIsGameStart }: Props) => {
     }
 
     //2. set mines to ramdom cell
+    const boardArrayWithMinesSet = setMines(resultArray, bomb, row, column);
+
+    setBoardArray(boardArrayWithMinesSet);
+  };
+
+  const setMines = (
+    boardArray: BoardType,
+    bomb: number,
+    row: number,
+    column: number
+  ) => {
+    const resultArray: BoardType = [...boardArray];
+
     if (bomb <= (row + 1) * (column + 1)) {
       let plantedMines = 0;
 
@@ -53,7 +60,6 @@ const Board = ({ cellInfoNumbers, isGameStart, setIsGameStart }: Props) => {
         const randomRowNumber = Math.floor(Math.random() * row);
         const randomColumnNumber = Math.floor(Math.random() * column);
 
-        console.log(1, randomRowNumber, randomColumnNumber);
         if (
           resultArray[randomRowNumber][randomColumnNumber] !== CellStatus.Bomb
         ) {
@@ -61,15 +67,13 @@ const Board = ({ cellInfoNumbers, isGameStart, setIsGameStart }: Props) => {
           plantedMines++;
         }
       }
-      setBoardArray(resultArray);
+      return resultArray;
     } else {
       window.alert(
         '전체 칸 수를 초과하는 지뢰 수를 입력하셨습니다. 다시 시작해주세요'
       );
       return;
     }
-
-    setBoardArray(resultArray);
   };
 
   useEffect(() => {
@@ -94,9 +98,7 @@ const Board = ({ cellInfoNumbers, isGameStart, setIsGameStart }: Props) => {
       for (let i = 0; i < boradArray.length; i++) {
         for (let j = 0; j < boradArray[0].length; j++) {
           if (i === rowIndex && j === columnIndex) {
-            if (resultArray[i][j] === CellStatus.Opened) {
-              resultArray[i][j] = CellStatus.Closed;
-            } else if (resultArray[i][j] === CellStatus.Closed) {
+            if (resultArray[i][j] === CellStatus.Closed) {
               resultArray[i][j] = CellStatus.Opened;
             }
           }
@@ -118,6 +120,7 @@ const Board = ({ cellInfoNumbers, isGameStart, setIsGameStart }: Props) => {
             {row.map((item, index2) => {
               return (
                 <BoardTableData
+                  key={index2}
                   onClick={(e) =>
                     onClickBoardCell(e, {
                       rowIndex: index1,
@@ -149,6 +152,7 @@ const BoardTableRow = styled.tr``;
 const BoardTableData = styled.td<{ status: CellStatus }>`
   width: 1rem;
   height: 1rem;
+  border-radius: 3px;
   background-color: ${(props) =>
     props.status === CellStatus.Opened
       ? props.theme.colors.sub2

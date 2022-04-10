@@ -93,7 +93,7 @@ const Game = () => {
       <HeaderContainer>
         <SubBox>
           <TitleText>지뢰갯수</TitleText>
-          <MineDisplay>10 개</MineDisplay>
+          <MineDisplay>{bomb} 개</MineDisplay>
         </SubBox>
         <SubBox style={{ width: '100%' }}>
           <LevelSelection onChange={(e) => onChangeLevelInput(e)}>
