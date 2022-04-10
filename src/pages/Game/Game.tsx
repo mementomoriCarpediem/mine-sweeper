@@ -6,7 +6,7 @@ import {
   LevelType,
   updateGameSettings,
 } from '../../store/slices/gameSlices';
-import Board from '../Board';
+import Board from '../Board/Board';
 
 const Game = () => {
   const { settings } = useAppSelector((state) => state.game);
@@ -64,21 +64,21 @@ const Game = () => {
         setCustomGameSettingInputs({
           row: 8,
           column: 8,
-          bomb: 10,
+          bomb: 5,
         });
         break;
       case 'Intermediate':
         setCustomGameSettingInputs({
           row: 16,
           column: 16,
-          bomb: 30,
+          bomb: 10,
         });
         break;
       case 'Expert':
         setCustomGameSettingInputs({
           row: 16,
           column: 16,
-          bomb: 50,
+          bomb: 20,
         });
         break;
       case '':
