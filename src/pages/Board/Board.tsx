@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 import { useAppSelector } from '../../store/config';
 
@@ -48,8 +54,6 @@ const Board = ({
   const [boradArray, setBoardArray] = useState<BoardType>([]);
 
   const [isFirstTry, setIsFirstTry] = useState<boolean>(true);
-
-  // const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   useEffect(() => {
     console.log('[Board/useEffect] cellInfoNumbers', { row, column, bomb });
@@ -157,8 +161,6 @@ const Board = ({
     // if cell is clicked and cell changed to opened, adjecent cells are open automatically till mine is detected
     const mineNumberDetected = checkAdjacentCells(rowIndex, columnIndex);
 
-    console.log(1, mineNumberDetected);
-
     if (mineNumberDetected > 0) {
       const newArrayWithMineNumberSet = setMineNumberToCell(
         mineNumberDetected,
@@ -169,11 +171,7 @@ const Board = ({
       resultArray = newArrayWithMineNumberSet
         ? newArrayWithMineNumberSet
         : resultArray;
-
-      console.log(2, resultArray);
     } else if (mineNumberDetected === 0) {
-      console.log(3, mineNumberDetected);
-
       resultArray[rowIndex][columnIndex] = CellStatus.Opened;
 
       openCellsWithOutMines(rowIndex - 1, columnIndex);
@@ -278,6 +276,34 @@ const Board = ({
         break;
     }
   };
+
+  // check if user win
+  const checkIsGameSuccess = useCallback(() => {
+    const cellsWithMines = [];
+    const closedCells = [];
+
+    for (let i = 0; i < row; i++) {
+      for (let j = 0; j < column; j++) {
+        if (boradArray[i][j] === CellStatus.Bomb) {
+          cellsWithMines.push(`${i}:${j}`);
+        } else if (boradArray[i][j] === CellStatus.Closed) {
+          closedCells.push(`${i}:${j}`);
+        }
+      }
+    }
+
+    if (closedCells.length === 0 && cellsWithMines.length === bomb) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [bomb, boradArray, column, row]);
+
+  useEffect(() => {
+    if (boradArray.length > 0) {
+      checkIsGameSuccess() && window.alert('YOU WIN') && setIsGameOver(true);
+    }
+  }, [boradArray, checkIsGameSuccess, setIsGameOver]);
 
   return (
     <BoardWrapper>

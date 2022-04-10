@@ -8,7 +8,7 @@ import {
 } from '../../store/slices/gameSlices';
 import Board from '../Board/Board';
 
-const TIMEOUT = 10; //sec
+const TIMEOUT = 30; //sec
 
 const Game = () => {
   const { settings } = useAppSelector((state) => state.game);
@@ -129,7 +129,7 @@ const Game = () => {
 
     const timerCallback = () => {
       const timeDiff = Date.now() - start;
-      if (Math.floor(timeDiff / 1000) <= TIMEOUT) {
+      if (Math.floor(timeDiff / 1000) <= TIMEOUT && !isGameOver) {
         setTimeElapsed(Math.floor(timeDiff / 1000));
       } else {
         clearInterval(timer);
@@ -183,7 +183,9 @@ const Game = () => {
         </SubBox>
         <SubBox>
           <TitleText>소요시간</TitleText>
-          <TimeDisplay> {timeElapsed} 초</TimeDisplay>
+          <TimeDisplay>
+            {!isGameOver && isGameStart ? timeElapsed : 0} 초
+          </TimeDisplay>
         </SubBox>
       </HeaderContainer>
 
