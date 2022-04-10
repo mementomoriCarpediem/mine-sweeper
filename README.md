@@ -5,12 +5,12 @@
 
 
 ### 설치 및 시작
-`git clone https://github.com/mementomoriCarpediem/mine-sweeper.git` &&
+> `git clone https://github.com/mementomoriCarpediem/mine-sweeper.git` &&
 `cd mine-sweeper` &&
 `yarn install`
 
 ### 적용 기술s
-- React, Typescript, redux-toolkit, styled-components
+> React, Typescript, redux-toolkit, styled-components
 
 ### 작동 방법
 - 프로젝트 시작
