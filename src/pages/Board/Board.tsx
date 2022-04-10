@@ -111,7 +111,6 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
    : if there is no mine, show mine number or open till mine is detected,
    : if cell with mine is clicked, game over
   */
-
   const onClickBoardCell = (
     e: React.MouseEvent<HTMLTableCellElement, MouseEvent>,
     { rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }
@@ -123,11 +122,11 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
 
     let resultArray = [...boradArray];
 
-    // console.log(1, isFirstTry);
+    console.log(1, isFirstTry);
 
     // if it is frist try, bomb is never exploded
     if (resultArray[rowIndex][columnIndex] === CellStatus.Bomb && !isFirstTry) {
-      // console.log(2, isFirstTry);
+      console.log(2, isFirstTry);
       setIsGameOver(true);
       window.alert('Game Over');
       return;
@@ -135,13 +134,18 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
       resultArray[rowIndex][columnIndex] === CellStatus.Bomb &&
       isFirstTry
     ) {
-      // console.log(3);
-      const shuffledBoardArray = shuffleMinesSetting(
-        resultArray,
-        rowIndex,
-        columnIndex
-      );
-      shuffledBoardArray && setBoardArray(shuffledBoardArray);
+      setIsFirstTry(false);
+      const newArrayToAvoidFirstMine = [...resultArray];
+
+      newArrayToAvoidFirstMine[rowIndex][columnIndex] = CellStatus.Closed;
+
+      const convertedRowIndex =
+        rowIndex + 1 > row ? rowIndex - 1 : rowIndex + 1;
+
+      newArrayToAvoidFirstMine[convertedRowIndex][columnIndex] =
+        CellStatus.Bomb;
+
+      resultArray = newArrayToAvoidFirstMine;
     }
 
     setIsFirstTry(false);
@@ -239,26 +243,6 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
     }
 
     // resultArray[rowIndex][colIndex] = CellStatus.Opened;
-  };
-
-  // return new board array only when clicked cell has no bomb
-  const shuffleMinesSetting = (
-    inputArray: BoardType,
-    rowIndex: number,
-    colIndex: number
-  ) => {
-    console.log(4);
-    let shuffledArray = [...inputArray];
-
-    if (shuffledArray[rowIndex][colIndex] !== CellStatus.Bomb) {
-      console.log(6);
-      return shuffledArray;
-    } else {
-      console.log(5);
-      const newGeneratedArray = generateBoard(column, row);
-      shuffledArray = [...newGeneratedArray];
-      shuffleMinesSetting(shuffledArray, rowIndex, colIndex);
-    }
   };
 
   const setMineNumberToCell = (
