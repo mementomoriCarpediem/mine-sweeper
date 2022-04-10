@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 import { useAppDispatch, useAppSelector } from '../../store/config';
 import {
@@ -7,6 +13,8 @@ import {
   updateGameSettings,
 } from '../../store/slices/gameSlices';
 import Board from '../Board/Board';
+
+const TIMEOUT = 5; //sec
 
 const Game = () => {
   const { settings } = useAppSelector((state) => state.game);
@@ -26,9 +34,12 @@ const Game = () => {
   const dispatch = useAppDispatch();
 
   const [isGameStart, setIsGameStart] = useState<boolean>(false);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [level, setLevel] = useState<LevelType | ''>('');
   const [customGameSettingInputs, setCustomGameSettingInputs] =
     useState<CustomSettingsType>({ row: 0, column: 0, bomb: 0 });
+
+  const [timeElapsed, setTimeElapsed] = useState<number>(0);
 
   const inputNameArray = [
     { name: 'row', text: '가로 길이', number: customGameSettingInputs.row },
@@ -76,7 +87,7 @@ const Game = () => {
         break;
       case 'Expert':
         setCustomGameSettingInputs({
-          row: 16,
+          row: 32,
           column: 16,
           bomb: 20,
         });
@@ -96,11 +107,13 @@ const Game = () => {
   }, [level]);
 
   const resetGame = () => {
+    console.log('reset game');
     if (levelInputRef.current) {
       levelInputRef.current.value = '';
     }
     setCustomGameSettingInputs({ row: 0, column: 0, bomb: 0 });
     setIsGameStart(false);
+    setIsGameOver(false);
   };
 
   const gameStart = () => {
@@ -120,9 +133,31 @@ const Game = () => {
         })
       );
       setIsGameStart(true);
+      gameTimer();
+      setIsGameOver(false);
     } else {
       window.alert('게임 설정 값을 모두 입력해주세요');
     }
+  };
+
+  const gameTimer = () => {
+    const start = Date.now();
+
+    const timerCallback = () => {
+      const timeDiff = Date.now() - start;
+      if (Math.floor(timeDiff / 1000) <= TIMEOUT) {
+        setTimeElapsed(Math.floor(timeDiff / 1000));
+      } else {
+        clearInterval(timer);
+        setIsGameOver(true);
+        if (levelInputRef.current) {
+          levelInputRef.current.value = '';
+        }
+        setCustomGameSettingInputs({ row: 0, column: 0, bomb: 0 });
+      }
+    };
+
+    const timer = setInterval(timerCallback, 1000);
   };
 
   return (
@@ -165,12 +200,17 @@ const Game = () => {
         </SubBox>
         <SubBox>
           <TitleText>소요시간</TitleText>
-          <TimeDisplay> 1 초</TimeDisplay>
+          <TimeDisplay> {timeElapsed} 초</TimeDisplay>
         </SubBox>
       </HeaderContainer>
 
       {isGameStart ? (
-        <Board isGameStart={isGameStart} setIsGameStart={setIsGameStart} />
+        <Board
+          isGameStart={isGameStart}
+          setIsGameStart={setIsGameStart}
+          isGameOver={isGameOver}
+          setIsGameOver={setIsGameOver}
+        />
       ) : (
         <EmptyText>게임 설정 값을 입력해주세요.</EmptyText>
       )}

@@ -32,9 +32,16 @@ const ADJACENT_CELLS_RELATIVE_LOCATIONS = [
 type Props = {
   isGameStart: boolean;
   setIsGameStart: Dispatch<SetStateAction<boolean>>;
+  isGameOver: boolean;
+  setIsGameOver: Dispatch<SetStateAction<boolean>>;
 };
 
-const Board = ({ isGameStart, setIsGameStart }: Props) => {
+const Board = ({
+  isGameStart,
+  setIsGameStart,
+  isGameOver,
+  setIsGameOver,
+}: Props) => {
   const { settings } = useAppSelector((state) => state.game);
   const { row, column, bomb } = settings;
 
@@ -42,7 +49,7 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
 
   const [isFirstTry, setIsFirstTry] = useState<boolean>(true);
 
-  const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  // const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   useEffect(() => {
     console.log('[Board/useEffect] cellInfoNumbers', { row, column, bomb });
@@ -334,8 +341,8 @@ const BoardBox = styled.tbody``;
 const BoardTableRow = styled.tr``;
 
 const BoardTableData = styled.td<{ status: CellStatus }>`
-  width: 1rem;
-  height: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 3px;
   text-align: center;
   background-color: ${(props) =>
