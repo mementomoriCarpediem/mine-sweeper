@@ -122,11 +122,8 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
 
     let resultArray = [...boradArray];
 
-    console.log(1, isFirstTry);
-
     // if it is frist try, bomb is never exploded
     if (resultArray[rowIndex][columnIndex] === CellStatus.Bomb && !isFirstTry) {
-      console.log(2, isFirstTry);
       setIsGameOver(true);
       window.alert('Game Over');
       return;
@@ -150,18 +147,10 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
 
     setIsFirstTry(false);
 
-    // if cell is clicked and the cell is closed, then cell is changed to open
-    for (let i = 0; i < boradArray.length; i++) {
-      for (let j = 0; j < boradArray[0].length; j++) {
-        if (i === rowIndex && j === columnIndex) {
-          if (resultArray[i][j] === CellStatus.Closed) {
-            resultArray[i][j] = CellStatus.Opened;
-          }
-        }
-      }
-    }
-
+    // if cell is clicked and cell changed to opened, adjecent cells are open automatically till mine is detected
     const mineNumberDetected = checkAdjacentCells(rowIndex, columnIndex);
+
+    console.log(1, mineNumberDetected);
 
     if (mineNumberDetected > 0) {
       const newArrayWithMineNumberSet = setMineNumberToCell(
@@ -173,7 +162,11 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
       resultArray = newArrayWithMineNumberSet
         ? newArrayWithMineNumberSet
         : resultArray;
+
+      console.log(2, resultArray);
     } else if (mineNumberDetected === 0) {
+      console.log(3, mineNumberDetected);
+
       resultArray[rowIndex][columnIndex] = CellStatus.Opened;
 
       openCellsWithOutMines(rowIndex - 1, columnIndex);
@@ -186,7 +179,7 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
     setBoardArray(resultArray);
   };
 
-  // check 8 cells around selected cell
+  // check 8cells around selected cell
   const checkAdjacentCells = (rowIndex: number, colIndex: number) => {
     let detectedMinesNumber: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 = 0;
 
@@ -216,13 +209,14 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
     if (
       rowIndex < 0 ||
       colIndex < 0 ||
-      rowIndex > row ||
-      colIndex > column ||
+      rowIndex + 1 > row ||
+      colIndex + 1 > column ||
       boradArray[rowIndex][colIndex] === CellStatus.Opened
     )
       return;
 
     const mineNumberDetected = checkAdjacentCells(rowIndex, colIndex);
+    console.log(4, mineNumberDetected);
 
     if (mineNumberDetected > 0) {
       const newArrayWithMineNumberSet = setMineNumberToCell(
@@ -231,7 +225,10 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
         colIndex
       );
       newArrayWithMineNumberSet && setBoardArray(newArrayWithMineNumberSet);
+
+      console.log(5);
     } else if (mineNumberDetected === 0) {
+      console.log(6);
       const resultArray = [...boradArray];
       resultArray[rowIndex][colIndex] = CellStatus.Opened;
       setBoardArray(resultArray);
@@ -252,30 +249,40 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
   ) => {
     const resultArray = [...boradArray];
 
+    console.log('check1', mineNumberDetected, rowIndex, columnIndex);
+
     switch (mineNumberDetected) {
       case 1:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb1;
+        // console.log('check2', resultArray);
         return resultArray;
       case 2:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb2;
+        // console.log('check3', resultArray);
         return resultArray;
       case 3:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb3;
+        // console.log('check4', resultArray);
         return resultArray;
       case 4:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb4;
+        // console.log('check5', resultArray);
         return resultArray;
       case 5:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb5;
+        // console.log('check6', resultArray);
         return resultArray;
       case 6:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb6;
+        // console.log('check7', resultArray);
         return resultArray;
       case 7:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb7;
+        // console.log('check8', resultArray);
         return resultArray;
       case 8:
         resultArray[rowIndex][columnIndex] = CellStatus.Bomb8;
+        // console.log('check9', resultArray);
         return resultArray;
       default:
         console.log('[Board/setMineNumberToCell] mineNumber is not set');
@@ -304,6 +311,7 @@ const Board = ({ isGameStart, setIsGameStart }: Props) => {
                     item !== CellStatus.Closed &&
                     item !== CellStatus.Bomb &&
                     item}
+                  {item === CellStatus.Bomb && isGameOver && `💣`}
                 </BoardTableData>
               );
             })}
