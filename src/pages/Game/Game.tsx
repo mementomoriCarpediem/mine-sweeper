@@ -1,12 +1,13 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { useAppDispatch, useAppSelector } from '../../store/config';
 import {
   CustomSettingsType,
   LevelType,
   updateGameSettings,
 } from '../../store/slices/gameSlices';
+
 import Board from '../Board/Board';
+import GameMain from './Game.style';
 
 const TIMEOUT = 30; //sec
 
@@ -47,7 +48,6 @@ const Game = () => {
 
   const onChangeLevelInput = (e: ChangeEvent<HTMLSelectElement>) => {
     setLevel(e.target.value as LevelType);
-    return level;
   };
 
   const onChangeCustomLevelInputs = (
@@ -69,21 +69,21 @@ const Game = () => {
         setCustomGameSettingInputs({
           row: 8,
           column: 8,
-          bomb: 5,
+          bomb: 10,
         });
         break;
       case 'Intermediate':
         setCustomGameSettingInputs({
           row: 16,
           column: 16,
-          bomb: 10,
+          bomb: 20,
         });
         break;
       case 'Expert':
         setCustomGameSettingInputs({
           row: 32,
           column: 16,
-          bomb: 20,
+          bomb: 50,
         });
         break;
       case '':
@@ -145,49 +145,55 @@ const Game = () => {
   };
 
   return (
-    <GameContainer>
-      <HeaderContainer>
-        <SubBox>
-          <TitleText>지뢰갯수</TitleText>
-          <MineDisplay>{bomb} 개</MineDisplay>
-        </SubBox>
-        <SubBox style={{ width: '100%' }}>
-          <LevelSelection
+    <GameMain.GameContainer>
+      <GameMain.Header>
+        <GameMain.SubBox>
+          <GameMain.TitleText>지뢰갯수</GameMain.TitleText>
+          <GameMain.MineDisplay>{bomb} 개</GameMain.MineDisplay>
+        </GameMain.SubBox>
+        <GameMain.SubBox style={{ width: '100%' }}>
+          <GameMain.LevelSelection
             onChange={(e) => onChangeLevelInput(e)}
             ref={levelInputRef}
           >
-            <LevelOption value="">난이도 선택</LevelOption>
-            <LevelOption value="Beginner">Beginner</LevelOption>
-            <LevelOption value="Intermediate">Intermediate</LevelOption>
-            <LevelOption value="Expert">Expert</LevelOption>
-          </LevelSelection>
-          <SettingContainer>
+            <GameMain.LevelOption value="">난이도 선택</GameMain.LevelOption>
+            <GameMain.LevelOption value="Beginner">
+              Beginner
+            </GameMain.LevelOption>
+            <GameMain.LevelOption value="Intermediate">
+              Intermediate
+            </GameMain.LevelOption>
+            <GameMain.LevelOption value="Expert">Expert</GameMain.LevelOption>
+          </GameMain.LevelSelection>
+          <GameMain.Setting>
             {inputNameArray.map((item) => {
               return (
-                <SettingInputLabel key={item.text}>
+                <GameMain.SettingInputLabel key={item.text}>
                   {item.text}
-                  <SettingInput
+                  <GameMain.SettingInput
                     type="number"
                     name={item.name}
                     value={item.number}
                     min="0"
                     onChange={onChangeCustomLevelInputs}
                   />
-                </SettingInputLabel>
+                </GameMain.SettingInputLabel>
               );
             })}
-          </SettingContainer>
-          <ButtonGroup>
-            <StartButton onClick={gameStart}>Start</StartButton>
-          </ButtonGroup>
-        </SubBox>
-        <SubBox>
-          <TitleText>소요시간</TitleText>
-          <TimeDisplay>
+          </GameMain.Setting>
+          <GameMain.ButtonGroup>
+            <GameMain.StartButton onClick={gameStart}>
+              Start
+            </GameMain.StartButton>
+          </GameMain.ButtonGroup>
+        </GameMain.SubBox>
+        <GameMain.SubBox>
+          <GameMain.TitleText>소요시간</GameMain.TitleText>
+          <GameMain.TimeDisplay>
             {!isGameOver && isGameStart ? timeElapsed : 0} 초
-          </TimeDisplay>
-        </SubBox>
-      </HeaderContainer>
+          </GameMain.TimeDisplay>
+        </GameMain.SubBox>
+      </GameMain.Header>
 
       {isGameStart ? (
         <Board
@@ -197,104 +203,10 @@ const Game = () => {
           setIsGameOver={setIsGameOver}
         />
       ) : (
-        <EmptyText>게임 설정 값을 입력해주세요.</EmptyText>
+        <GameMain.EmptyText>게임 설정 값을 입력해주세요.</GameMain.EmptyText>
       )}
-    </GameContainer>
+    </GameMain.GameContainer>
   );
 };
 
 export default Game;
-
-const GameContainer = styled.main`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 800px;
-  min-height: 400px;
-  margin: auto;
-  margin-top: 5rem;
-  border: 2px solid black;
-  border-radius: 5px;
-`;
-
-const HeaderContainer = styled.section`
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  background-color: ${(props) => props.theme.colors.main};
-  border-bottom: 2px solid black;
-`;
-
-const SettingContainer = styled.section`
-  display: flex;
-  width: 100%;
-  justify-content: space-around;
-  margin: 1rem 0;
-`;
-
-const SettingInput = styled.input`
-  width: 50%;
-  height: 1rem;
-  /* margin-left: 1rem; */
-`;
-
-const SettingInputLabel = styled.label`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const SubBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem 1rem;
-`;
-
-const TitleText = styled.p`
-  font-weight: 700;
-`;
-
-const TimeDisplay = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 5rem;
-  height: 2rem;
-  background-color: ${(props) => props.theme.colors.sub2};
-  border-radius: 5px;
-`;
-
-const MineDisplay = styled(TimeDisplay)``;
-
-const ButtonGroup = styled.div``;
-
-const ResetButton = styled.button`
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 8px 15px;
-  margin-left: 1rem;
-  border-width: 0;
-  width: 5rem;
-  background-color: salmon;
-  border-radius: ${(props) => props.theme.borderRadius};
-`;
-
-const StartButton = styled(ResetButton)`
-  color: white;
-  background-color: blue;
-`;
-
-const LevelSelection = styled.select`
-  width: 9rem;
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 1px 5px;
-`;
-
-const LevelOption = styled.option``;
-
-const EmptyText = styled.p`
-  margin: auto auto;
-`;

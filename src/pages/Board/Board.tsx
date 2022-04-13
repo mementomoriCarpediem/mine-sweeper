@@ -5,24 +5,9 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import styled from 'styled-components';
+
 import { useAppSelector } from '../../store/config';
-
-enum CellStatus {
-  Opened = 'OPENED',
-  Closed = 'CLOSED',
-  Bomb = 'BOMB',
-  Bomb1 = '1',
-  Bomb2 = '2',
-  Bomb3 = '3',
-  Bomb4 = '4',
-  Bomb5 = '5',
-  Bomb6 = '6',
-  Bomb7 = '7',
-  Bomb8 = '8',
-}
-
-type BoardType = CellStatus[][];
+import BoardMain, { CellStatus, BoardType } from './Board.style';
 
 const ADJACENT_CELLS_RELATIVE_LOCATIONS = [
   [-1, -1],
@@ -35,7 +20,7 @@ const ADJACENT_CELLS_RELATIVE_LOCATIONS = [
   [1, 1],
 ];
 
-type Props = {
+type BoardProps = {
   isGameStart: boolean;
   setIsGameStart: Dispatch<SetStateAction<boolean>>;
   isGameOver: boolean;
@@ -47,7 +32,7 @@ const Board = ({
   setIsGameStart,
   isGameOver,
   setIsGameOver,
-}: Props) => {
+}: BoardProps) => {
   const { settings } = useAppSelector((state) => state.game);
   const { row, column, bomb } = settings;
 
@@ -306,13 +291,13 @@ const Board = ({
   }, [boradArray, checkIsGameSuccess, setIsGameOver]);
 
   return (
-    <BoardWrapper>
-      <BoardBox>
+    <BoardMain.BoardWrapper>
+      <BoardMain.BoardBox>
         {boradArray?.map((row, index1) => (
-          <BoardTableRow key={index1}>
+          <BoardMain.BoardTableRow key={index1}>
             {row.map((item, index2) => {
               return (
-                <BoardTableData
+                <BoardMain.BoardTableData
                   key={index2}
                   onClick={(e) =>
                     onClickBoardCell(e, {
@@ -327,34 +312,14 @@ const Board = ({
                     item !== CellStatus.Bomb &&
                     item}
                   {item === CellStatus.Bomb && isGameOver && `💣`}
-                </BoardTableData>
+                </BoardMain.BoardTableData>
               );
             })}
-          </BoardTableRow>
+          </BoardMain.BoardTableRow>
         ))}
-      </BoardBox>
-    </BoardWrapper>
+      </BoardMain.BoardBox>
+    </BoardMain.BoardWrapper>
   );
 };
 
 export default Board;
-
-const BoardWrapper = styled.table`
-  padding: 5px;
-  margin: auto auto;
-`;
-
-const BoardBox = styled.tbody``;
-
-const BoardTableRow = styled.tr``;
-
-const BoardTableData = styled.td<{ status: CellStatus }>`
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 3px;
-  text-align: center;
-  background-color: ${(props) =>
-    props.status === CellStatus.Opened
-      ? props.theme.colors.sub2
-      : props.theme.colors.main};
-`;
