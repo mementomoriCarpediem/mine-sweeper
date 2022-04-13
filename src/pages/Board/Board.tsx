@@ -37,7 +37,6 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
     verticalNumber: number
   ) => {
     const baseArray: BoardType = [];
-    console.log(1, horizontalNumber, verticalNumber, baseArray);
 
     for (let i = 0; i < verticalNumber; i++) {
       baseArray.push([]);
@@ -51,13 +50,10 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
   //3. set mines to ramdom cell
   const setMines = useCallback(
     (boardArrayWithoutMines: BoardType) => {
-      console.log(2, boardArrayWithoutMines);
       const resultArray: BoardType = [...boardArrayWithoutMines];
 
       if (bomb <= row * column) {
         let plantedMines = 0;
-
-        console.log(3, bomb, row, column);
 
         while (plantedMines < bomb) {
           const randomRowNumber = Math.floor(Math.random() * row);
@@ -70,8 +66,6 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
             plantedMines++;
           }
         }
-
-        console.log(4, plantedMines);
 
         return resultArray;
       } else {
@@ -161,7 +155,7 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
   const checkAdjacentCells = (rowIndex: number, colIndex: number) => {
     let detectedMinesNumber: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 = 0;
 
-    ADJACENT_CELLS_RELATIVE_LOCATIONS.map((item, index) => {
+    ADJACENT_CELLS_RELATIVE_LOCATIONS.forEach((item, index) => {
       if (
         !(
           rowIndex + item[0] < 0 ||
