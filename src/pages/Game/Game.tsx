@@ -6,10 +6,10 @@ import {
   updateGameSettings,
 } from '../../store/slices/gameSlices';
 
+import { SETTING_INPUTS_BY_LEVELS, TIMEOUT } from '../../constants';
+
 import Board from '../Board/Board';
 import GameMain from './Game.style';
-
-const TIMEOUT = 30; //sec
 
 const Game = () => {
   const { settings } = useAppSelector((state) => state.game);
@@ -36,13 +36,13 @@ const Game = () => {
 
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
 
-  const inputNameArray = [
-    { name: 'row', text: '가로 길이', number: customGameSettingInputs.row },
+  const settingInputNameArray = [
     {
       name: 'column',
-      text: '세로 길이',
+      text: '가로 길이',
       number: customGameSettingInputs.column,
     },
+    { name: 'row', text: '세로 길이', number: customGameSettingInputs.row },
     { name: 'bomb', text: '지뢰 수', number: customGameSettingInputs.bomb },
   ];
 
@@ -66,36 +66,19 @@ const Game = () => {
   useEffect(() => {
     switch (level) {
       case 'Beginner':
-        setCustomGameSettingInputs({
-          row: 8,
-          column: 8,
-          bomb: 10,
-        });
+        setCustomGameSettingInputs(SETTING_INPUTS_BY_LEVELS.Beginner);
         break;
       case 'Intermediate':
-        setCustomGameSettingInputs({
-          row: 16,
-          column: 16,
-          bomb: 20,
-        });
+        setCustomGameSettingInputs(SETTING_INPUTS_BY_LEVELS.Intermediate);
         break;
       case 'Expert':
-        setCustomGameSettingInputs({
-          row: 32,
-          column: 16,
-          bomb: 50,
-        });
+        setCustomGameSettingInputs(SETTING_INPUTS_BY_LEVELS.Expert);
         break;
       case '':
-        setCustomGameSettingInputs({
-          row: 0,
-          column: 0,
-          bomb: 0,
-        });
+        setCustomGameSettingInputs(SETTING_INPUTS_BY_LEVELS.None);
         break;
-
       default:
-        console.log('[Game/useEffect] custom settting..');
+        console.log('[Game/useEffecgt] the level is not exist');
         break;
     }
   }, [level]);
@@ -117,27 +100,34 @@ const Game = () => {
         })
       );
       setIsGameStart(true);
-      gameTimer();
+      gameTimer('ON');
       setIsGameOver(false);
     } else {
       window.alert('게임 설정 값을 모두 입력해주세요');
     }
   };
 
-  const gameTimer = () => {
+  const resetGame = () => {
+    setIsGameStart(false);
+    setIsGameOver(true);
+    gameTimer('OFF');
+    setCustomGameSettingInputs({ row: 0, column: 0, bomb: 0 });
+    if (levelInputRef.current) {
+      levelInputRef.current.value = '';
+    }
+  };
+
+  const gameTimer = (timerStatus: 'ON' | 'OFF') => {
     const start = Date.now();
 
     const timerCallback = () => {
       const timeDiff = Date.now() - start;
-      if (Math.floor(timeDiff / 1000) <= TIMEOUT && !isGameOver) {
+
+      if (Math.floor(timeDiff / 1000) <= TIMEOUT && timerStatus === 'ON') {
         setTimeElapsed(Math.floor(timeDiff / 1000));
       } else {
-        clearInterval(timer);
+        timer && clearInterval(timer);
         setIsGameOver(true);
-        if (levelInputRef.current) {
-          levelInputRef.current.value = '';
-        }
-        setCustomGameSettingInputs({ row: 0, column: 0, bomb: 0 });
       }
     };
 
@@ -166,7 +156,7 @@ const Game = () => {
             <GameMain.LevelOption value="Expert">Expert</GameMain.LevelOption>
           </GameMain.LevelSelection>
           <GameMain.Setting>
-            {inputNameArray.map((item) => {
+            {settingInputNameArray.map((item) => {
               return (
                 <GameMain.SettingInputLabel key={item.text}>
                   {item.text}
@@ -185,6 +175,9 @@ const Game = () => {
             <GameMain.StartButton onClick={gameStart}>
               Start
             </GameMain.StartButton>
+            <GameMain.ResetButton onClick={resetGame}>
+              Reset
+            </GameMain.ResetButton>
           </GameMain.ButtonGroup>
         </GameMain.SubBox>
         <GameMain.SubBox>
@@ -198,7 +191,6 @@ const Game = () => {
       {isGameStart ? (
         <Board
           isGameStart={isGameStart}
-          setIsGameStart={setIsGameStart}
           isGameOver={isGameOver}
           setIsGameOver={setIsGameOver}
         />

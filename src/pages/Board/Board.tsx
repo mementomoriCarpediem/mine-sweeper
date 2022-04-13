@@ -5,39 +5,22 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { ADJACENT_CELLS_RELATIVE_LOCATIONS } from '../../constants';
 
 import { useAppSelector } from '../../store/config';
-import BoardMain, { CellStatus, BoardType } from './Board.style';
-
-const ADJACENT_CELLS_RELATIVE_LOCATIONS = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, -1],
-  [0, 1],
-  [1, -1],
-  [1, 0],
-  [1, 1],
-];
+import BoardMain, { BoardType, CellStatus } from './Board.style';
 
 type BoardProps = {
   isGameStart: boolean;
-  setIsGameStart: Dispatch<SetStateAction<boolean>>;
   isGameOver: boolean;
   setIsGameOver: Dispatch<SetStateAction<boolean>>;
 };
 
-const Board = ({
-  isGameStart,
-  setIsGameStart,
-  isGameOver,
-  setIsGameOver,
-}: BoardProps) => {
+const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
   const { settings } = useAppSelector((state) => state.game);
   const { row, column, bomb } = settings;
 
   const [boradArray, setBoardArray] = useState<BoardType>([]);
-
   const [isFirstTry, setIsFirstTry] = useState<boolean>(true);
 
   useEffect(() => {
@@ -48,59 +31,65 @@ const Board = ({
     console.log('[Board/useEffect] boradArray', boradArray);
   }, [boradArray]);
 
-  const generateBoard = (row: number, column: number) => {
-    //2. generate base board array at start
-    const resultArray: BoardType = [];
-
-    for (let i = 0; i < row; i++) {
-      resultArray.push([]);
-      for (let j = 0; j < column; j++) {
-        resultArray[i][j] = CellStatus.Closed;
-      }
-    }
-
-    //3. set mines to ramdom cell
-    const boardArrayWithMinesSet = setMines(resultArray, bomb, row, column);
-
-    return boardArrayWithMinesSet;
-  };
-
-  const setMines = (
-    boardArray: BoardType,
-    bomb: number,
-    row: number,
-    column: number
+  //2. generate base board array at start
+  const generateBoard = async (
+    horizontalNumber: number,
+    verticalNumber: number
   ) => {
-    const resultArray: BoardType = [...boardArray];
+    const baseArray: BoardType = [];
+    console.log(1, horizontalNumber, verticalNumber, baseArray);
 
-    if (bomb <= (row + 1) * (column + 1)) {
-      let plantedMines = 0;
-
-      while (plantedMines < bomb) {
-        const randomRowNumber = Math.floor(Math.random() * row);
-        const randomColumnNumber = Math.floor(Math.random() * column);
-
-        if (
-          resultArray[randomRowNumber][randomColumnNumber] !== CellStatus.Bomb
-        ) {
-          resultArray[randomRowNumber][randomColumnNumber] = CellStatus.Bomb;
-          plantedMines++;
-        }
+    for (let i = 0; i < verticalNumber; i++) {
+      baseArray.push([]);
+      for (let j = 0; j < horizontalNumber; j++) {
+        baseArray[i][j] = CellStatus.Closed;
       }
-      return resultArray;
-    } else {
-      window.alert(
-        '전체 칸 수를 초과하는 지뢰 수를 입력하셨습니다. 다시 시작해주세요'
-      );
-      return [];
     }
+    return baseArray;
   };
+
+  //3. set mines to ramdom cell
+  const setMines = useCallback(
+    (boardArrayWithoutMines: BoardType) => {
+      console.log(2, boardArrayWithoutMines);
+      const resultArray: BoardType = [...boardArrayWithoutMines];
+
+      if (bomb <= row * column) {
+        let plantedMines = 0;
+
+        console.log(3, bomb, row, column);
+
+        while (plantedMines < bomb) {
+          const randomRowNumber = Math.floor(Math.random() * row);
+          const randomColumnNumber = Math.floor(Math.random() * column);
+
+          if (
+            resultArray[randomRowNumber][randomColumnNumber] !== CellStatus.Bomb
+          ) {
+            resultArray[randomRowNumber][randomColumnNumber] = CellStatus.Bomb;
+            plantedMines++;
+          }
+        }
+
+        console.log(4, plantedMines);
+
+        return resultArray;
+      } else {
+        window.alert(
+          '전체 칸 수를 초과하는 지뢰 수를 입력하셨습니다. 다시 시작해주세요'
+        );
+        return [];
+      }
+    },
+    [bomb, column, row]
+  );
 
   useEffect(() => {
     //1. if user click "start" button, genearteBoard
-    isGameStart && setBoardArray(generateBoard(column, row));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bomb, column, isGameStart, row]);
+    if (isGameStart) {
+      generateBoard(column, row).then((res) => setBoardArray(setMines(res)));
+    }
+  }, [column, isGameStart, row, setMines]);
 
   /* 
   4. on click each cell, cell is open 
@@ -174,21 +163,17 @@ const Board = ({
 
     ADJACENT_CELLS_RELATIVE_LOCATIONS.map((item, index) => {
       if (
-        rowIndex + item[0] < 0 ||
-        colIndex + item[1] < 0 ||
-        rowIndex + item[0] + 1 > row ||
-        colIndex + item[1] + 1 > column
+        !(
+          rowIndex + item[0] < 0 ||
+          colIndex + item[1] < 0 ||
+          rowIndex + item[0] + 1 > row ||
+          colIndex + item[1] + 1 > column
+        ) &&
+        boradArray[rowIndex + item[0]][colIndex + item[1]] === CellStatus.Bomb
       ) {
-        // console.log('[Board/checkAdjacentCells] this location is not exist');
-      } else {
-        if (
-          boradArray[rowIndex + item[0]][colIndex + item[1]] === CellStatus.Bomb
-        ) {
-          detectedMinesNumber++;
-        }
+        detectedMinesNumber++;
       }
     });
-
     return detectedMinesNumber;
   };
 
@@ -293,30 +278,31 @@ const Board = ({
   return (
     <BoardMain.BoardWrapper>
       <BoardMain.BoardBox>
-        {boradArray?.map((row, index1) => (
-          <BoardMain.BoardTableRow key={index1}>
-            {row.map((item, index2) => {
-              return (
-                <BoardMain.BoardTableData
-                  key={index2}
-                  onClick={(e) =>
-                    onClickBoardCell(e, {
-                      rowIndex: index1,
-                      columnIndex: index2,
-                    })
-                  }
-                  status={item}
-                >
-                  {item !== CellStatus.Opened &&
-                    item !== CellStatus.Closed &&
-                    item !== CellStatus.Bomb &&
-                    item}
-                  {item === CellStatus.Bomb && isGameOver && `💣`}
-                </BoardMain.BoardTableData>
-              );
-            })}
-          </BoardMain.BoardTableRow>
-        ))}
+        {boradArray.length > 0 &&
+          boradArray.map((row, index1) => (
+            <BoardMain.BoardTableRow key={index1}>
+              {row.map((item, index2) => {
+                return (
+                  <BoardMain.BoardTableData
+                    key={index2}
+                    onClick={(e) =>
+                      onClickBoardCell(e, {
+                        rowIndex: index1,
+                        columnIndex: index2,
+                      })
+                    }
+                    status={item}
+                  >
+                    {item !== CellStatus.Opened &&
+                      item !== CellStatus.Closed &&
+                      item !== CellStatus.Bomb &&
+                      item}
+                    {item === CellStatus.Bomb && isGameOver && `💣`}
+                  </BoardMain.BoardTableData>
+                );
+              })}
+            </BoardMain.BoardTableRow>
+          ))}
       </BoardMain.BoardBox>
     </BoardMain.BoardWrapper>
   );

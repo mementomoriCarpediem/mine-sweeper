@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { LevelType } from '../../store/slices/gameSlices';
 
 const GameContainer = styled.main`
   display: flex;
@@ -88,7 +89,7 @@ const LevelSelection = styled.select`
   padding: 1px 5px;
 `;
 
-const LevelOption = styled.option``;
+const LevelOption = styled.option<{ value: LevelType | '' }>``;
 
 const EmptyText = styled.p`
   margin: auto auto;
