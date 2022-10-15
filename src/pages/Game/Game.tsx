@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CustomSettingsType, LevelType } from '../../store/slices/gameSlices';
-import Board from '../Board/Board';
+
+import BoardContainer from '../Board/BoardContainer';
 import GameMain from './Game.style';
 import GameHeader from './GameHeader';
 
@@ -24,7 +25,7 @@ const Game = () => {
       <GameHeader states={states} setStates={setStates} />
 
       {!isGameOver ? (
-        <Board
+        <BoardContainer
           isGameOver={isGameOver}
           setIsGameOver={(value) => setStates({ ...states, isGameOver: value })}
         />

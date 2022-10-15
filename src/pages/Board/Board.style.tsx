@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { CellStatus } from './Board';
+import { CellStatus } from './BoardContainer';
 
 const BoardWrapper = styled.table`
   padding: 5px;
