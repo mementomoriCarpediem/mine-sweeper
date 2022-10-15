@@ -83,11 +83,6 @@ const GameHeader = ({ states, setStates }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [level]);
 
-  useEffect(() => {
-    isGameOver && resetGame();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGameOver]);
-
   let timer = useRef<NodeJS.Timeout>();
 
   const gameTimer = (timerStatus: TimerStatus) => {
