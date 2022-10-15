@@ -1,20 +1,5 @@
 import styled from 'styled-components';
-
-export enum CellStatus {
-  Opened = 'OPENED',
-  Closed = 'CLOSED',
-  Bomb = 'BOMB',
-  Bomb1 = '1',
-  Bomb2 = '2',
-  Bomb3 = '3',
-  Bomb4 = '4',
-  Bomb5 = '5',
-  Bomb6 = '6',
-  Bomb7 = '7',
-  Bomb8 = '8',
-}
-
-export type BoardType = CellStatus[][];
+import { CellStatus } from './Board';
 
 const BoardWrapper = styled.table`
   padding: 5px;
@@ -37,7 +22,7 @@ const BoardTableData = styled.td<{ status: CellStatus }>`
 `;
 
 interface BoardMainProps {
-  children: any;
+  children: React.ReactChildren;
 }
 
 const BoardMain = ({ children, ...rest }: BoardMainProps) => (

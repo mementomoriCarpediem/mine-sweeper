@@ -2,7 +2,28 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ADJACENT_CELLS_RELATIVE_LOCATIONS } from '../../constants';
 
 import { useAppSelector } from '../../store/config';
-import BoardMain, { BoardType, CellStatus } from './Board.style';
+import BoardMain from './Board.style';
+
+export enum CellStatus {
+  Opened = 'OPENED',
+  Closed = 'CLOSED',
+  Bomb = 'BOMB',
+  Bomb1 = '1',
+  Bomb2 = '2',
+  Bomb3 = '3',
+  Bomb4 = '4',
+  Bomb5 = '5',
+  Bomb6 = '6',
+  Bomb7 = '7',
+  Bomb8 = '8',
+}
+type PickKey<T, K extends keyof T> = Extract<keyof T, K>;
+type PickedCellStatus = PickKey<
+  typeof CellStatus,
+  'Bomb1' | 'Bomb2' | 'Bomb3' | 'Bomb4' | 'Bomb5' | 'Bomb6' | 'Bomb7' | 'Bomb8'
+>;
+
+export type BoardType = CellStatus[][];
 
 type BoardProps = {
   isGameStart: boolean;
@@ -38,6 +59,7 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
         baseArray[i][j] = CellStatus.Closed;
       }
     }
+
     return baseArray;
   };
 
@@ -74,9 +96,8 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
 
   useEffect(() => {
     //1. if user click "start" button, genearteBoard
-    if (isGameStart) {
+    if (isGameStart)
       generateBoard(column, row).then((res) => setBoardArray(setMines(res)));
-    }
   }, [column, isGameStart, row, setMines]);
 
   /* 
@@ -158,9 +179,8 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
           colIndex + item[1] + 1 > column
         ) &&
         boradArray[rowIndex + item[0]][colIndex + item[1]] === CellStatus.Bomb
-      ) {
+      )
         detectedMinesNumber++;
-      }
     });
     return detectedMinesNumber;
   };
@@ -204,35 +224,13 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
   ) => {
     const resultArray = [...boradArray];
 
-    switch (mineNumberDetected) {
-      case 1:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb1;
-        return resultArray;
-      case 2:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb2;
-        return resultArray;
-      case 3:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb3;
-        return resultArray;
-      case 4:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb4;
-        return resultArray;
-      case 5:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb5;
-        return resultArray;
-      case 6:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb6;
-        return resultArray;
-      case 7:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb7;
-        return resultArray;
-      case 8:
-        resultArray[rowIndex][columnIndex] = CellStatus.Bomb8;
-        return resultArray;
-      default:
-        console.log('[Board/setMineNumberToCell] mineNumber is not set');
-        break;
-    }
+    const BombNumber: PickedCellStatus = `Bomb${
+      mineNumberDetected + 1
+    }` as PickedCellStatus;
+
+    resultArray[rowIndex][columnIndex] = CellStatus[BombNumber];
+
+    return resultArray;
   };
 
   // check if user win
@@ -250,16 +248,15 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
       }
     }
 
-    if (closedCells.length === 0 && cellsWithMines.length === bomb) {
-      return true;
-    } else {
-      return false;
-    }
+    return closedCells.length === 0 && cellsWithMines.length === bomb
+      ? true
+      : false;
   }, [bomb, boradArray, column, row]);
 
   useEffect(() => {
-    if (boradArray.length > 0) {
-      checkIsGameSuccess() && window.alert('YOU WIN') && setIsGameOver(true);
+    if (boradArray.length > 0 && checkIsGameSuccess()) {
+      window.alert('YOU WIN');
+      setIsGameOver(true);
     }
   }, [boradArray, checkIsGameSuccess, setIsGameOver]);
 
