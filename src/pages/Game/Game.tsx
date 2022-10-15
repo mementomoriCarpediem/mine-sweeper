@@ -4,10 +4,9 @@ import Board from '../Board/Board';
 import GameMain from './Game.style';
 import GameHeader from './GameHeader';
 
-export const INITIAL_STATES = {
+export const INITIAL_STATES: GameStates = {
   isGameOver: false,
   customGameSettingInputs: { row: 0, column: 0, bomb: 0 },
-  level: undefined,
 };
 
 export type GameStates = {
