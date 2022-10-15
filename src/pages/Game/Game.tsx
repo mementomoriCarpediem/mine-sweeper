@@ -25,7 +25,6 @@ const Game = () => {
 
       {!isGameOver ? (
         <Board
-          isGameStart={!isGameOver}
           isGameOver={isGameOver}
           setIsGameOver={(value) => setStates({ ...states, isGameOver: value })}
         />

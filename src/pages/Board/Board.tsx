@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ADJACENT_CELLS_RELATIVE_LOCATIONS } from '../../constants';
 
 import { useAppSelector } from '../../store/config';
-import BoardMain from './Board.style';
+
+import BoardContainer from './BoardContainer';
 
 export enum CellStatus {
   Opened = 'OPENED',
@@ -26,25 +27,24 @@ type PickedCellStatus = PickKey<
 export type BoardType = CellStatus[][];
 
 type BoardProps = {
-  isGameStart: boolean;
   isGameOver: boolean;
   setIsGameOver: (value: boolean) => void;
 };
 
-const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
+const Board = ({ isGameOver, setIsGameOver }: BoardProps) => {
   const { settings } = useAppSelector((state) => state.game);
   const { row, column, bomb } = settings;
 
   const [boradArray, setBoardArray] = useState<BoardType>([]);
   const [isFirstTry, setIsFirstTry] = useState<boolean>(true);
 
-  useEffect(() => {
-    console.log('[Board/useEffect] cellInfoNumbers', { row, column, bomb });
-  }, [bomb, column, row]);
+  // useEffect(() => {
+  //   console.log('[Board/useEffect] cellInfoNumbers', { row, column, bomb });
+  // }, [bomb, column, row]);
 
-  useEffect(() => {
-    console.log('[Board/useEffect] boradArray', boradArray);
-  }, [boradArray]);
+  // useEffect(() => {
+  //   console.log('[Board/useEffect] boradArray', boradArray);
+  // }, [boradArray]);
 
   //2. generate base board array at start
   const generateBoard = async (
@@ -96,9 +96,9 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
 
   useEffect(() => {
     //1. if user click "start" button, genearteBoard
-    if (isGameStart)
+    if (!isGameOver)
       generateBoard(column, row).then((res) => setBoardArray(setMines(res)));
-  }, [column, isGameStart, row, setMines]);
+  }, [column, isGameOver, row, setMines]);
 
   /* 
   4. on click each cell, cell is open 
@@ -261,35 +261,11 @@ const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
   }, [boradArray, checkIsGameSuccess, setIsGameOver]);
 
   return (
-    <BoardMain.BoardWrapper>
-      <BoardMain.BoardBox>
-        {boradArray.length > 0 &&
-          boradArray.map((row, index1) => (
-            <BoardMain.BoardTableRow key={index1}>
-              {row.map((item, index2) => {
-                return (
-                  <BoardMain.BoardTableData
-                    key={index2}
-                    onClick={(e) =>
-                      onClickBoardCell(e, {
-                        rowIndex: index1,
-                        columnIndex: index2,
-                      })
-                    }
-                    status={item}
-                  >
-                    {item !== CellStatus.Opened &&
-                      item !== CellStatus.Closed &&
-                      item !== CellStatus.Bomb &&
-                      item}
-                    {item === CellStatus.Bomb && isGameOver && `💣`}
-                  </BoardMain.BoardTableData>
-                );
-              })}
-            </BoardMain.BoardTableRow>
-          ))}
-      </BoardMain.BoardBox>
-    </BoardMain.BoardWrapper>
+    <BoardContainer
+      boradArray={boradArray}
+      isGameOver={isGameOver}
+      onClickBoardCell={onClickBoardCell}
+    />
   );
 };
 
