@@ -57,6 +57,7 @@ const GameHeader = ({ states, setStates }: Props) => {
   ];
 
   const onChangeLevelInput = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.value === LEVEL_OPTION_DEFAULT_TEXT) return;
     setStates({ ...states, level: e.target.value as LevelType });
   };
 
