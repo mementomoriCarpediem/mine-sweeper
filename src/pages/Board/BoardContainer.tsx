@@ -26,11 +26,16 @@ type PickedCellStatus = PickKey<
 export type BoardType = CellStatus[][];
 
 type BoardProps = {
+  isGameStart: boolean;
   isGameOver: boolean;
   setIsGameOver: (value: boolean) => void;
 };
 
-const BoardContainer = ({ isGameOver, setIsGameOver }: BoardProps) => {
+const BoardContainer = ({
+  isGameStart,
+  isGameOver,
+  setIsGameOver,
+}: BoardProps) => {
   const { settings } = useAppSelector((state) => state.game);
   const { row, column, bomb } = settings;
 
@@ -95,9 +100,9 @@ const BoardContainer = ({ isGameOver, setIsGameOver }: BoardProps) => {
 
   useEffect(() => {
     //1. if user click "start" button, genearteBoard
-    if (!isGameOver)
+    if (isGameStart)
       generateBoard(column, row).then((res) => setBoardArray(setMines(res)));
-  }, [column, isGameOver, row, setMines]);
+  }, [column, isGameStart, row, setMines]);
 
   /* 
   4. on click each cell, cell is open 

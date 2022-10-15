@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { SETTING_INPUTS_BY_LEVELS } from '../../constants';
+import { SETTING_INPUTS_BY_LEVELS, TIMEOUT } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../store/config';
 import {
   CustomSettingsType,
@@ -93,7 +93,12 @@ const GameHeader = ({ states, setStates }: Props) => {
     let seconds = timeElapsed;
 
     if (timerStatus === 'ON')
-      timer.current = setInterval(() => setTimeElapsed(seconds++), 1000);
+      timer.current = setInterval(() => {
+        if (seconds >= TIMEOUT[level ?? 'None']) {
+          setTimeElapsed(0);
+          setStates({ ...states, isGameOver: true });
+        } else setTimeElapsed(seconds++);
+      }, 1000);
 
     if (timerStatus === 'OFF' && timer.current) clearInterval(timer.current);
   };
@@ -112,12 +117,12 @@ const GameHeader = ({ states, setStates }: Props) => {
       );
       gameTimer('ON');
 
-      setStates({ ...states, isGameOver: false });
+      setStates({ ...states, isGameStart: true, isGameOver: false });
     } else window.alert('게임 설정 값을 모두 입력해주세요');
   };
 
   const resetGame = () => {
-    setStates({ ...INITIAL_STATES, isGameOver: true });
+    setStates({ ...INITIAL_STATES, isGameStart: false, isGameOver: true });
 
     dispatch(updateGameSettings(initialState));
 
@@ -181,6 +186,9 @@ const GameHeader = ({ states, setStates }: Props) => {
         <GameMain.TimeDisplay>
           {!isGameOver ? timeElapsed : 0} 초
         </GameMain.TimeDisplay>
+        <p style={{ textAlign: 'center' }}>
+          <strong>제한시간: {TIMEOUT[level ?? 'None']} 초</strong>
+        </p>
       </GameMain.SubBox>
     </GameMain.Header>
   );

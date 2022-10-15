@@ -6,11 +6,13 @@ import GameMain from './Game.style';
 import GameHeader from './GameHeader';
 
 export const INITIAL_STATES: GameStates = {
+  isGameStart: false,
   isGameOver: false,
   customGameSettingInputs: { row: 0, column: 0, bomb: 0 },
 };
 
 export type GameStates = {
+  isGameStart: boolean;
   isGameOver: boolean;
   customGameSettingInputs: CustomSettingsType;
   level?: LevelType;
@@ -18,14 +20,16 @@ export type GameStates = {
 
 const Game = () => {
   const [states, setStates] = useState<GameStates>(INITIAL_STATES);
-  const { isGameOver } = states;
+  const { isGameOver, isGameStart } = states;
+  console.log(isGameOver);
 
   return (
     <GameMain.GameContainer>
       <GameHeader states={states} setStates={setStates} />
 
-      {!isGameOver ? (
+      {isGameStart ? (
         <BoardContainer
+          isGameStart={isGameStart}
           isGameOver={isGameOver}
           setIsGameOver={(value) => setStates({ ...states, isGameOver: value })}
         />

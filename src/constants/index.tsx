@@ -1,5 +1,16 @@
 //Game.tsx
-export const TIMEOUT = 10; //sec
+export const TIMEOUT: {
+  Beginner: number;
+  Intermediate: number;
+  Expert: number;
+  None: number;
+} = {
+  //sec
+  Beginner: 60,
+  Intermediate: 100,
+  Expert: 300,
+  None: 30,
+};
 
 export const SETTING_INPUTS_BY_LEVELS = {
   Beginner: { row: 8, column: 8, bomb: 10 },
