@@ -89,7 +89,7 @@ const LevelSelection = styled.select`
   padding: 1px 5px;
 `;
 
-const LevelOption = styled.option<{ value: LevelType | '' }>``;
+const LevelOption = styled.option<{ value?: LevelType }>``;
 
 const EmptyText = styled.p`
   margin: auto auto;

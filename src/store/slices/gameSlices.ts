@@ -1,20 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type CustomSettingsType = Omit<GameType['settings'], 'gameLevel'>;
-export type LevelType = 'Beginner' | 'Intermediate' | 'Expert';
+export enum LevelType {
+  Beginner = 'Beginner',
+  Intermediate = 'Intermediate',
+  Expert = 'Expert',
+}
 
 export interface GameType {
   settings: {
-    gameLevel: LevelType | '';
     row: number;
     column: number;
     bomb: number;
+    gameLevel?: LevelType;
   };
 }
 
 export const initialState: GameType = {
   settings: {
-    gameLevel: '',
     row: 0,
     column: 0,
     bomb: 0,

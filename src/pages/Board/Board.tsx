@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ADJACENT_CELLS_RELATIVE_LOCATIONS } from '../../constants';
 
 import { useAppSelector } from '../../store/config';
@@ -13,7 +7,7 @@ import BoardMain, { BoardType, CellStatus } from './Board.style';
 type BoardProps = {
   isGameStart: boolean;
   isGameOver: boolean;
-  setIsGameOver: Dispatch<SetStateAction<boolean>>;
+  setIsGameOver: (value: boolean) => void;
 };
 
 const Board = ({ isGameStart, isGameOver, setIsGameOver }: BoardProps) => {
