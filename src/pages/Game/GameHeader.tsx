@@ -165,12 +165,13 @@ const GameHeader = ({ states, setStates }: Props) => {
         </GameMain.Setting>
         <GameMain.ButtonGroup>
           {['Start', 'Reset'].map((buttonName) => (
-            <GameMain.StartButton
+            <GameMain.StartResetButton
               key={buttonName}
+              isStart={buttonName === 'Start' ? true : false}
               onClick={buttonName === 'Start' ? gameStart : resetGame}
             >
               {buttonName}
-            </GameMain.StartButton>
+            </GameMain.StartResetButton>
           ))}
         </GameMain.ButtonGroup>
       </GameMain.SubBox>

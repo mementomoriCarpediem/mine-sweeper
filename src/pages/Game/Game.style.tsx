@@ -66,20 +66,16 @@ const MineDisplay = styled(TimeDisplay)``;
 
 const ButtonGroup = styled.div``;
 
-const ResetButton = styled.button`
+const StartResetButton = styled.button<{ isStart: boolean }>`
   font-size: 1rem;
   font-weight: 500;
   padding: 8px 15px;
   margin-left: 1rem;
   border-width: 0;
   width: 5rem;
-  background-color: salmon;
   border-radius: ${(props) => props.theme.borderRadius};
-`;
-
-const StartButton = styled(ResetButton)`
   color: white;
-  background-color: blue;
+  background-color: ${(props) => (props.isStart ? 'blue' : 'salmon')};
 `;
 
 const LevelSelection = styled.select`
@@ -113,8 +109,8 @@ GameMain.TitleText = TitleText;
 GameMain.TimeDisplay = TimeDisplay;
 GameMain.MineDisplay = MineDisplay;
 GameMain.ButtonGroup = ButtonGroup;
-GameMain.ResetButton = ResetButton;
-GameMain.StartButton = StartButton;
+
+GameMain.StartResetButton = StartResetButton;
 GameMain.LevelSelection = LevelSelection;
 GameMain.LevelOption = LevelOption;
 GameMain.EmptyText = EmptyText;
